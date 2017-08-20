@@ -8,6 +8,7 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -29,11 +30,12 @@ public class ExempelProjekt implements EntryPoint {
 	private ArrayList<Button> numBtnList = new ArrayList<Button>(); /* Store Numerical Buttons */
 	private ArrayList<Button> opBtnList = new ArrayList<Button>(); /* Store Operator Buttons */
 	private FlexTable resultsTable = new FlexTable();
-	private int newValue = 0;
+	private int newValue;
 	private String preValue = "";
 	private String postValue = "";
 	private String currentOperator = "";
 	private int newRow = 1;
+	private boolean isZeroByCalc;
 	
 	/**
 	 * Entry point method.
@@ -127,7 +129,7 @@ public class ExempelProjekt implements EntryPoint {
 		/* Add style to Operator Buttons */
 		for(Button opIndex : opBtnList) {
 			String opToString = "";
-			opToString = opIndex.getText().toString();
+			opToString = opIndex.getText();
 			final String btnText = opToString;
 			if((opToString.equals("=") || (opToString.equals("C") || (opToString.equals("\u232B"))))) {
 				if(opToString.equals("=")) {
@@ -201,21 +203,25 @@ public class ExempelProjekt implements EntryPoint {
 	/* Addition */
 	public void add(String preValue, String postValue) {
 		newValue = Integer.parseInt(preValue) + Integer.parseInt(postValue);
+		isZeroByCalc(newValue);
 	}
 
 	/* Subtraction */
 	public void sub(String preValue, String postValue) {
 		newValue = Integer.parseInt(preValue) - Integer.parseInt(postValue);
+		isZeroByCalc(newValue);
 	}
 	
 	/* Multiplication */
 	public void multiply(String preValue, String postValue) {
 		newValue = Integer.parseInt(preValue) * Integer.parseInt(postValue);
+		isZeroByCalc(newValue);
 	}
 
 	/* Division */
 	public void divide(String preValue, String postValue) {
 		newValue = Integer.parseInt(preValue) / Integer.parseInt(postValue);
+		isZeroByCalc(newValue);
 	}
 	
 	/* Makes Calculations depending of the currentOperator active */
@@ -230,8 +236,12 @@ public class ExempelProjekt implements EntryPoint {
 		} else if (currentOperator == "/") {
 			divide(preValue, postValue);
 		}
+		
+		if(!isEmpty(resultLabel.getText())) {
+			toResultsTable();
+		}
 		resultLabel.setText("0");
-		toResultsTable();
+		
 	}
 	
 	/* Checks wheter last character in a String is a Operator or Not. [Not used as for now] */
@@ -245,6 +255,7 @@ public class ExempelProjekt implements EntryPoint {
 		}
 	}
 	
+	/* Checks which operator has been press and set the currentOperator to the value of the Button */
 	public void operatorInput(String btnText) {
 		if (btnText.equals("+")) {
 			currentOperator = "+";
@@ -267,8 +278,34 @@ public class ExempelProjekt implements EntryPoint {
 	/* Uses a Row count in order to put the results at the appropriate level of the table */
 	public void toResultsTable() {
 		int row = newRow++;
-		resultsTable.setText(row, 0, preValue + " " + currentOperator + " " + postValue);
-		resultsTable.setText(row, 1, Integer.toString(newValue));
+		if(!isEmpty(preValue) && !isEmpty(currentOperator)) {
+			resultsTable.setText(row, 0, preValue + " " + currentOperator + " " + postValue);
+			if(isZeroByCalc || !isEmpty(resultLabel.getText())) {
+				resultsTable.setText(row, 1, Integer.toString(newValue));
+			}
+		} else {
+			Window.alert("Syntax Error: Please check your inputs");
+		}
+	}
+	
+	/* Checks if String is empty or not defined */
+	public boolean isEmpty(String s) {
+		if(s.equals("") || s.equals("0") || s.equals(null)) {
+			return true;
+		}
+		return false;
+	}
+	
+	/* Checks if value is 0 by Calculation or not [For allowing result to be 0 but not if not through calculation] */
+	public boolean isZeroByCalc(int value) {
+		if(value == 0) {
+			isZeroByCalc = true;
+		} else if(value == 0 && postValue.equals("0")) {
+			isZeroByCalc = true;
+		} else {
+			isZeroByCalc = false;
+		}
+		return isZeroByCalc;
 	}
 	
 	/* Checks if a String could be seen as an integer */
