@@ -42,6 +42,7 @@ public class ExempelProjekt implements EntryPoint {
 	private String preValue = "";
 	private String postValue = "";
 	private String currentOperator = "";
+	private int newRow = 1;
 	
 	/**
 	 * Entry point method.
@@ -259,7 +260,7 @@ public class ExempelProjekt implements EntryPoint {
 		} else if (currentOperator == "/") {
 			divide(preValue, postValue);
 		}
-		resultLabel.setText("" + newValue);
+		resultLabel.setText("0");
 		toResultsTable();
 	}
 	
@@ -293,9 +294,9 @@ public class ExempelProjekt implements EntryPoint {
 	}
 	
 	public void toResultsTable() {
-		// Temporary setup. Change is required!
-		resultsTable.setText(1, 0, preValue + " " + currentOperator + " " + postValue);
-		resultsTable.setText(1, 1, Integer.toString(newValue));
+		int row = newRow++;
+		resultsTable.setText(row, 0, preValue + " " + currentOperator + " " + postValue);
+		resultsTable.setText(row, 1, Integer.toString(newValue));
 	}
 	
 	// Checks if a String could be seen as an integer
