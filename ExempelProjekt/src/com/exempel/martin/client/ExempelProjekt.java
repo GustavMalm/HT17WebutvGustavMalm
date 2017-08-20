@@ -11,6 +11,7 @@ import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
@@ -36,6 +37,11 @@ public class ExempelProjekt implements EntryPoint {
 	private Label resultLabel = new Label("0");
 	private ArrayList<Button> numBtnList = new ArrayList<Button>(); /* Store Numerical Buttons */
 	private ArrayList<Button> opBtnList = new ArrayList<Button>(); /* Store Operator Buttons */
+	private FlexTable resultsTable = new FlexTable();
+	private int newValue = 0;
+	private String preValue = "";
+	private String postValue = "";
+	private String currentOperator = "";
 	
 	/**
 	 * Entry point method.
@@ -43,6 +49,12 @@ public class ExempelProjekt implements EntryPoint {
 	public void onModuleLoad() {
 		generateBtns();
 		resultLabel.addStyleName("result calc__display");
+		resultsTable.setText(0, 0, "Math");
+		resultsTable.setText(0, 1, "Result");
+		resultsTable.getRowFormatter().addStyleName(0, "resultsListHeader");
+		resultsTable.addStyleName("resultsList");
+		resultsTable.getCellFormatter().addStyleName(0, 0, "resultsListColumn");
+		resultsTable.getCellFormatter().addStyleName(0, 1, "resultsListColumn");
 		
 		// Set Numericals to Grid
 		grid.setWidget(0, 0, numBtnList.get(7));
@@ -67,21 +79,16 @@ public class ExempelProjekt implements EntryPoint {
 		mainPanel.add(resultLabel);
 		mainPanel.add(grid);
 		mainPanel.add(opBtnList.get(4));
+		
+		addPanel.add(resultsTable);
 		// Associate the Main panel with the HTML host page.
 		RootPanel.get("calculator").add(mainPanel);
-
-		opBtnList.get(4).addClickHandler(new ClickHandler() {
-			
-			@Override
-			public void onClick(ClickEvent event) {
-				calculate();
-			}
-		});
+		RootPanel.get("resultsTable").add(addPanel);
 
 		opBtnList.get(4).addKeyDownHandler(new KeyDownHandler() {
 			public void onKeyDown(KeyDownEvent event) {
 				if (event.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
-					calculate();
+					sum();
 					Window.alert("Pressed: " + event.getNativeKeyCode());
 				}
 			}
@@ -149,12 +156,12 @@ public class ExempelProjekt implements EntryPoint {
 		opBtnList.add(new Button("\u232B")); /* Symbol of Unicode Character 'ERASE TO THE LEFT' (U+232B) (Simulates delete last input) */
 		
 		
-		// Add style to Numerical Buttons
+		/* Add style to Numerical Buttons */
 		for(Button numIndex : numBtnList) {
 			numIndex.setStyleName("calc__number");
 		}
 
-		// Add style to Operator Buttons
+		/* Add style to Operator Buttons */
 		for(Button opIndex : opBtnList) {
 			String opToString = "";
 			opToString = opIndex.getText().toString();
@@ -167,7 +174,7 @@ public class ExempelProjekt implements EntryPoint {
 
 						@Override
 						public void onClick(ClickEvent event) {
-							
+							sum();
 						}
 						
 					});
@@ -211,7 +218,9 @@ public class ExempelProjekt implements EntryPoint {
 					@Override
 					public void onClick(ClickEvent event) {
 						if(resultLabel.getText() != "0") {
+							operatorInput(btnText);
 							resultLabel.setText(resultLabel.getText() + btnText);
+							
 						} else {
 							return;
 						}
@@ -222,8 +231,74 @@ public class ExempelProjekt implements EntryPoint {
 		}
 		
 	}
+	
+	public void add(String preValue, String postValue) {
+		newValue = Integer.parseInt(preValue) + Integer.parseInt(postValue);
+	}
 
-	// Checkes if a String could be seen as an integer
+	public void sub(String preValue, String postValue) {
+		newValue = Integer.parseInt(preValue) - Integer.parseInt(postValue);
+	}
+	
+	public void multiply(String preValue, String postValue) {
+		newValue = Integer.parseInt(preValue) * Integer.parseInt(postValue);
+	}
+
+	public void divide(String preValue, String postValue) {
+		newValue = Integer.parseInt(preValue) / Integer.parseInt(postValue);
+	}
+	
+	public void sum() {
+		postValue = resultLabel.getText().substring(preValue.length() + 1);
+		if (currentOperator == "+") {
+			add(preValue, postValue);
+		} else if (currentOperator == "-") {
+			sub(preValue, postValue);
+		} else if (currentOperator == "*") {
+			multiply(preValue, postValue);
+		} else if (currentOperator == "/") {
+			divide(preValue, postValue);
+		}
+		resultLabel.setText("" + newValue);
+		toResultsTable();
+	}
+	
+	public boolean isOperator() {
+		String check = "";		
+	    check = resultLabel.getText().substring(0, resultLabel.getText().length() - 1);
+		if(check == "+" || check == "-" || check == "*" || check == "/") {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	public void operatorInput(String btnText) {
+		if (btnText.equals("+")) {
+			currentOperator = "+";
+		} else if (btnText.equals("-")) {
+			currentOperator = "-";
+		} else if (btnText.equals("*")) {
+			currentOperator = "*";
+		} else if (btnText.equals("/")) {
+			currentOperator = "/";
+		} else if (btnText.equals("=")) {
+			if (postValue == "") {
+				Window.alert("Du måste ha en komplett uträkning! Exempel 1+1, 50-5 osv...");
+				return;
+			}		
+			sum();
+		}
+		preValue = resultLabel.getText().substring(0, resultLabel.getText().length());
+	}
+	
+	public void toResultsTable() {
+		// Temporary setup. Change is required!
+		resultsTable.setText(1, 0, preValue + " " + currentOperator + " " + postValue);
+		resultsTable.setText(1, 1, Integer.toString(newValue));
+	}
+	
+	// Checks if a String could be seen as an integer
 	public boolean isInteger(String input) {
 		try {
 			Integer.parseInt(input);
