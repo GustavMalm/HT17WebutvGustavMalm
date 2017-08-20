@@ -183,6 +183,7 @@ public class ExempelProjekt implements EntryPoint {
 				} else if(opToString.equals("C")) {
 					// Add style to Clear Button
 					opIndex.getElement().setId("clearResult");
+					opIndex.setTitle("Clear Display");
 					opIndex.addClickHandler(new ClickHandler() {
 
 						@Override
@@ -195,6 +196,7 @@ public class ExempelProjekt implements EntryPoint {
 				} else if(opToString.equals("\u232B")) {
 					// Add style to RemoveLatest Button
 					opIndex.getElement().setId("removeLast");
+					opIndex.setTitle("Remove last character");
 					opIndex.addClickHandler(new ClickHandler() {
 
 						@Override
