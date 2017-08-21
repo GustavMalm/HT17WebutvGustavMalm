@@ -1,6 +1,5 @@
 package com.exempel.martin.client;
 
-import java.awt.Event;
 import java.util.ArrayList;
 
 import com.google.gwt.core.client.EntryPoint;
@@ -9,7 +8,6 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
-import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -204,6 +202,7 @@ public class ExempelProjekt implements EntryPoint {
 					public void onClick(ClickEvent event) {
 						if(resultLabel.getText() != "0") {
 							operatorInput(btnText);
+							checkIfDuplicate();
 							resultLabel.setText(resultLabel.getText() + btnText);
 							
 						} else {
@@ -304,6 +303,16 @@ public class ExempelProjekt implements EntryPoint {
 		} else {
 			Window.alert("Syntax Error: Please check your inputs");
 		}
+	}
+	
+	public void checkIfDuplicate() {
+		String s = resultLabel.getText();
+		s = s.replace("+", "");
+		s = s.replace("-", "");
+		s = s.replace("*", "");
+		s = s.replace("/", "");
+		
+		resultLabel.setText(s);
 	}
 	
 	/* Checks if String is empty or not defined */
