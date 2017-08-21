@@ -1,5 +1,6 @@
 package com.exempel.martin.client;
 
+import java.awt.Event;
 import java.util.ArrayList;
 
 import com.google.gwt.core.client.EntryPoint;
@@ -30,7 +31,7 @@ public class ExempelProjekt implements EntryPoint {
 	private ArrayList<Button> numBtnList = new ArrayList<Button>(); /* Store Numerical Buttons */
 	private ArrayList<Button> opBtnList = new ArrayList<Button>(); /* Store Operator Buttons */
 	private FlexTable resultsTable = new FlexTable();
-	private int newValue;
+	private float newValue;
 	private String preValue = "";
 	private String postValue = "";
 	private String currentOperator = "";
@@ -170,10 +171,27 @@ public class ExempelProjekt implements EntryPoint {
 						        str = resultLabel.getText().substring(0, resultLabel.getText().length() - 1);
 						        resultLabel.setText(str);
 						        
-						        if(resultLabel.getText() == null || resultLabel.getText() == "" || resultLabel.getText() == "0") {
+						        if(isEmpty(resultLabel.getText())) {
 									resultLabel.setText("0");
 								}
 						    }
+						}
+						
+					});
+					
+					opIndex.addKeyDownHandler(new KeyDownHandler() {
+
+						@Override
+						public void onKeyDown(KeyDownEvent event) {
+							String str = "";
+							if (event.getNativeKeyCode() == KeyCodes.KEY_BACKSPACE) {
+								str = resultLabel.getText().substring(0, resultLabel.getText().length() - 1);
+						        resultLabel.setText(str);
+						        
+						        if(isEmpty(resultLabel.getText())) {
+									resultLabel.setText("0");
+								}
+							}
 						}
 						
 					});
@@ -202,25 +220,25 @@ public class ExempelProjekt implements EntryPoint {
 	
 	/* Addition */
 	public void add(String preValue, String postValue) {
-		newValue = Integer.parseInt(preValue) + Integer.parseInt(postValue);
+		newValue = Float.parseFloat(preValue) + Float.parseFloat(postValue);
 		isZeroByCalc(newValue);
 	}
 
 	/* Subtraction */
 	public void sub(String preValue, String postValue) {
-		newValue = Integer.parseInt(preValue) - Integer.parseInt(postValue);
+		newValue = Float.parseFloat(preValue) - Float.parseFloat(postValue);
 		isZeroByCalc(newValue);
 	}
 	
 	/* Multiplication */
 	public void multiply(String preValue, String postValue) {
-		newValue = Integer.parseInt(preValue) * Integer.parseInt(postValue);
+		newValue = Float.parseFloat(preValue) * Float.parseFloat(postValue);
 		isZeroByCalc(newValue);
 	}
 
 	/* Division */
 	public void divide(String preValue, String postValue) {
-		newValue = Integer.parseInt(preValue) / Integer.parseInt(postValue);
+		newValue = Float.parseFloat(preValue) / Float.parseFloat(postValue);
 		isZeroByCalc(newValue);
 	}
 	
@@ -281,7 +299,7 @@ public class ExempelProjekt implements EntryPoint {
 		if(!isEmpty(preValue) && !isEmpty(currentOperator)) {
 			resultsTable.setText(row, 0, preValue + " " + currentOperator + " " + postValue);
 			if(isZeroByCalc || !isEmpty(resultLabel.getText())) {
-				resultsTable.setText(row, 1, Integer.toString(newValue));
+				resultsTable.setText(row, 1, Float.toString(newValue));
 			}
 		} else {
 			Window.alert("Syntax Error: Please check your inputs");
@@ -297,7 +315,7 @@ public class ExempelProjekt implements EntryPoint {
 	}
 	
 	/* Checks if value is 0 by Calculation or not [For allowing result to be 0 but not if not through calculation] */
-	public boolean isZeroByCalc(int value) {
+	public boolean isZeroByCalc(Float value) {
 		if(value == 0) {
 			isZeroByCalc = true;
 		} else if(value == 0 && postValue.equals("0")) {
