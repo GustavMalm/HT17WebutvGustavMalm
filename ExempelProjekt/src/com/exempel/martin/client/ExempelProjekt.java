@@ -13,8 +13,8 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 /**
@@ -25,7 +25,7 @@ public class ExempelProjekt implements EntryPoint {
 	private VerticalPanel mainPanel = new VerticalPanel();
 	private Grid grid = new Grid(4, 4);
 	private HorizontalPanel resultsPanel = new HorizontalPanel();
-	private Label resultLabel = new Label("0");
+	private TextBox resultLabel = new TextBox();
 	private ArrayList<Button> numBtnList = new ArrayList<Button>(); /* Store Numerical Buttons */
 	private ArrayList<Button> opBtnList = new ArrayList<Button>(); /* Store Operator Buttons */
 	private FlexTable resultsTable = new FlexTable();
@@ -40,8 +40,44 @@ public class ExempelProjekt implements EntryPoint {
 	 * Entry point method.
 	 */
 	public void onModuleLoad() {
+		initDefaultGUI();
+		
+		/* Assemble Main panel. */
+		mainPanel.add(resultLabel);
+		mainPanel.add(grid);
+		mainPanel.add(opBtnList.get(4));
+		
+		resultsPanel.add(resultsTable);
+		
+		/* Associate the Main panel with the HTML host page. */
+		RootPanel.get("calculator").add(mainPanel);
+		RootPanel.get("resultsTable").add(resultsPanel);
+
+	}
+	
+	public void initDefaultGUI() {
 		generateBtns();
+		
 		resultLabel.addStyleName("result calc__display");
+		resultLabel.setReadOnly(true);
+		resultLabel.setFocus(true);
+		resultLabel.addKeyDownHandler(new KeyDownHandler() {
+
+			@Override
+			public void onKeyDown(KeyDownEvent event) {
+				event.preventDefault();
+				if(event.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+					opBtnList.get(4).click(); /* Equals Button */
+				}
+				
+				if (event.getNativeKeyCode() == KeyCodes.KEY_BACKSPACE) {
+					opBtnList.get(6).click(); /* Remove Last */
+				}
+				
+			}
+			
+		});
+		
 		resultsTable.setText(0, 0, "Math");
 		resultsTable.setText(0, 1, "Result");
 		resultsTable.getRowFormatter().addStyleName(0, "resultsListHeader");
@@ -68,25 +104,6 @@ public class ExempelProjekt implements EntryPoint {
 		grid.setWidget(3, 2, opBtnList.get(5));
 		grid.setWidget(3, 0, opBtnList.get(6));
 		
-		/* Assemble Main panel. */
-		mainPanel.add(resultLabel);
-		mainPanel.add(grid);
-		mainPanel.add(opBtnList.get(4));
-		
-		resultsPanel.add(resultsTable);
-		
-		/* Associate the Main panel with the HTML host page. */
-		RootPanel.get("calculator").add(mainPanel);
-		RootPanel.get("resultsTable").add(resultsPanel);
-
-		opBtnList.get(4).addKeyDownHandler(new KeyDownHandler() {
-			public void onKeyDown(KeyDownEvent event) {
-				if (event.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
-					calculate();
-					Window.alert("Pressed: " + event.getNativeKeyCode());
-				}
-			}
-		});
 	}
 	
 	public void generateBtns() {	
@@ -96,6 +113,7 @@ public class ExempelProjekt implements EntryPoint {
 			numBtnList.add(new Button("" + i +""));
 			Button currentBtn = numBtnList.get(i);
 			final String btnText = currentBtn.getText();
+			numBtnList.get(i).setFocus(false);
 			numBtnList.get(i).addClickHandler(new ClickHandler() {
 			
 				@Override
@@ -105,6 +123,7 @@ public class ExempelProjekt implements EntryPoint {
 					} else {
 						resultLabel.setText(btnText);
 					}
+					resultLabel.setFocus(true);
 				}
 				
 			});
@@ -138,11 +157,12 @@ public class ExempelProjekt implements EntryPoint {
 
 						@Override
 						public void onClick(ClickEvent event) {
+							event.preventDefault();
 							calculate();
 						}
 						
 					});
-					
+				
 				} else if(opToString.equals("C")) {
 					/* Add style to Clear Button */
 					opIndex.getElement().setId("clearResult");
@@ -151,6 +171,7 @@ public class ExempelProjekt implements EntryPoint {
 
 						@Override
 						public void onClick(ClickEvent event) {
+							event.preventDefault();
 							resultLabel.setText("0");
 						}
 						
@@ -164,6 +185,7 @@ public class ExempelProjekt implements EntryPoint {
 
 						@Override
 						public void onClick(ClickEvent event) {
+							event.preventDefault();
 							String str = "";
 							if (resultLabel.getText() != null && resultLabel.getText().length() > 0) {
 						        str = resultLabel.getText().substring(0, resultLabel.getText().length() - 1);
@@ -176,23 +198,6 @@ public class ExempelProjekt implements EntryPoint {
 						}
 						
 					});
-					
-					opIndex.addKeyDownHandler(new KeyDownHandler() {
-
-						@Override
-						public void onKeyDown(KeyDownEvent event) {
-							String str = "";
-							if (event.getNativeKeyCode() == KeyCodes.KEY_BACKSPACE) {
-								str = resultLabel.getText().substring(0, resultLabel.getText().length() - 1);
-						        resultLabel.setText(str);
-						        
-						        if(isEmpty(resultLabel.getText())) {
-									resultLabel.setText("0");
-								}
-							}
-						}
-						
-					});
 				}
 			} else {
 				opIndex.setStyleName("calc__sign");
@@ -200,6 +205,7 @@ public class ExempelProjekt implements EntryPoint {
 
 					@Override
 					public void onClick(ClickEvent event) {
+						event.preventDefault();
 						if(resultLabel.getText() != "0") {
 							operatorInput(btnText);
 							checkIfDuplicate();
@@ -212,6 +218,7 @@ public class ExempelProjekt implements EntryPoint {
 					
 				});
 			}
+			resultLabel.setFocus(true);
 		}
 		
 	}
