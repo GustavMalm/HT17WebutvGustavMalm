@@ -8,6 +8,7 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -25,13 +26,13 @@ public class ExempelProjekt implements EntryPoint {
 	private VerticalPanel mainPanel = new VerticalPanel();
 	private Grid grid = new Grid(4, 4);
 	private HorizontalPanel resultsPanel = new HorizontalPanel();
-	private TextBox resultLabel = new TextBox();
+	private TextBox resultTextBox = new TextBox();
 	private ArrayList<Button> numBtnList = new ArrayList<Button>(); /* Store Numerical Buttons */
 	private ArrayList<Button> opBtnList = new ArrayList<Button>(); /* Store Operator Buttons */
 	private FlexTable resultsTable = new FlexTable();
 	private float newValue;
-	private String preValue = "";
-	private String postValue = "";
+	private float preValue;
+	private float postValue;
 	private String currentOperator = "";
 	private int newRow = 1;
 	private boolean isZeroByCalc;
@@ -43,7 +44,7 @@ public class ExempelProjekt implements EntryPoint {
 		initDefaultGUI();
 		
 		/* Assemble Main panel. */
-		mainPanel.add(resultLabel);
+		mainPanel.add(resultTextBox);
 		mainPanel.add(grid);
 		mainPanel.add(opBtnList.get(4));
 		
@@ -58,14 +59,53 @@ public class ExempelProjekt implements EntryPoint {
 	public void initDefaultGUI() {
 		generateBtns();
 		
-		resultLabel.addStyleName("result calc__display");
-		resultLabel.setReadOnly(true);
-		resultLabel.setFocus(true);
-		resultLabel.addKeyDownHandler(new KeyDownHandler() {
+		DOM.getElementById("calculator").focus();
+		
+		resultTextBox.setText("0");
+		resultTextBox.addStyleName("result calc__display");
+		resultTextBox.setReadOnly(true);
+		resultTextBox.setFocus(true);
+		resultTextBox.addKeyDownHandler(new KeyDownHandler() {
 
 			@Override
 			public void onKeyDown(KeyDownEvent event) {
 				event.preventDefault();
+				
+				/* Add onKeyDown event to Numerical Buttons (Looking for a better solution) */
+				int keyCode = event.getNativeKeyCode();
+				if(keyCode == KeyCodes.KEY_NUM_ZERO) {
+					numBtnList.get(0).click();
+				} else if(keyCode == KeyCodes.KEY_NUM_ONE) {
+					numBtnList.get(1).click();
+				} else if(keyCode == KeyCodes.KEY_NUM_TWO) {
+					numBtnList.get(2).click();
+				} else if(keyCode == KeyCodes.KEY_NUM_THREE) {
+					numBtnList.get(3).click();
+				} else if(keyCode == KeyCodes.KEY_NUM_FOUR) {
+					numBtnList.get(4).click();
+				} else if(keyCode == KeyCodes.KEY_NUM_FIVE) {
+					numBtnList.get(5).click();
+				} else if(keyCode == KeyCodes.KEY_NUM_SIX) {
+					numBtnList.get(6).click();
+				} else if(keyCode == KeyCodes.KEY_NUM_SEVEN) {
+					numBtnList.get(7).click();
+				} else if(keyCode == KeyCodes.KEY_NUM_EIGHT) {
+					numBtnList.get(8).click();
+				} else if(keyCode == KeyCodes.KEY_NUM_NINE) {
+					numBtnList.get(9).click();
+				}
+				
+				/* Add onKeyDown event to Operator Buttons (Looking for a better solution) */
+				if(keyCode == KeyCodes.KEY_NUM_PLUS) {
+					opBtnList.get(0).click();
+				} else if(keyCode == KeyCodes.KEY_NUM_MINUS) {
+					opBtnList.get(1).click();
+				}  else if(keyCode == KeyCodes.KEY_NUM_MULTIPLY) {
+					opBtnList.get(2).click();
+				} else if(keyCode == KeyCodes.KEY_NUM_DIVISION) {
+					opBtnList.get(3).click();
+				} 
+							
 				if(event.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
 					opBtnList.get(4).click(); /* Equals Button */
 				}
@@ -74,10 +114,13 @@ public class ExempelProjekt implements EntryPoint {
 					opBtnList.get(6).click(); /* Remove Last */
 				}
 				
+				if (event.getNativeKeyCode() == KeyCodes.KEY_C || event.getNativeKeyCode() == KeyCodes.KEY_NUM_PERIOD) {
+					opBtnList.get(5).click(); /* Clear Display */
+				}			
 			}
-			
 		});
 		
+		/* Set-Up FlexTable */
 		resultsTable.setText(0, 0, "Math");
 		resultsTable.setText(0, 1, "Result");
 		resultsTable.getRowFormatter().addStyleName(0, "resultsListHeader");
@@ -96,6 +139,7 @@ public class ExempelProjekt implements EntryPoint {
 		grid.setWidget(2, 1, numBtnList.get(2));
 		grid.setWidget(2, 2, numBtnList.get(3));
 		grid.setWidget(3, 1, numBtnList.get(0));
+		
 		/* Set Operators to Grid */
 		grid.setWidget(0, 3, opBtnList.get(0));
 		grid.setWidget(1, 3, opBtnList.get(1));
@@ -103,11 +147,9 @@ public class ExempelProjekt implements EntryPoint {
 		grid.setWidget(3, 3, opBtnList.get(3));
 		grid.setWidget(3, 2, opBtnList.get(5));
 		grid.setWidget(3, 0, opBtnList.get(6));
-		
 	}
 	
 	public void generateBtns() {	
-		
 		/* Generate Numerical Input */
 		for(int i = 0; i < 10; i++) {
 			numBtnList.add(new Button("" + i +""));
@@ -115,17 +157,15 @@ public class ExempelProjekt implements EntryPoint {
 			final String btnText = currentBtn.getText();
 			numBtnList.get(i).setFocus(false);
 			numBtnList.get(i).addClickHandler(new ClickHandler() {
-			
 				@Override
 				public void onClick(ClickEvent event) {
-					if(resultLabel.getText() != "0") {
-						resultLabel.setText(resultLabel.getText() + btnText);
+					if(resultTextBox.getText() != "0") {
+						resultTextBox.setText(resultTextBox.getText() + btnText);
 					} else {
-						resultLabel.setText(btnText);
+						resultTextBox.setText(btnText);
 					}
-					resultLabel.setFocus(true);
+					resultTextBox.setFocus(true);
 				}
-				
 			});
 		}
 		
@@ -154,124 +194,124 @@ public class ExempelProjekt implements EntryPoint {
 					/* Add style to Equals Operator Button */
 					opIndex.getElement().setId("equals");
 					opIndex.addClickHandler(new ClickHandler() {
-
 						@Override
 						public void onClick(ClickEvent event) {
 							event.preventDefault();
 							calculate();
 						}
-						
 					});
-				
 				} else if(opToString.equals("C")) {
 					/* Add style to Clear Button */
 					opIndex.getElement().setId("clearResult");
 					opIndex.setTitle("Clear Display");
 					opIndex.addClickHandler(new ClickHandler() {
-
 						@Override
 						public void onClick(ClickEvent event) {
 							event.preventDefault();
-							resultLabel.setText("0");
+							resultTextBox.setText("0");
 						}
-						
 					});
-					
 				} else if(opToString.equals("\u232B")) {
 					/* Add style to RemoveLatest Button */
 					opIndex.getElement().setId("removeLast");
 					opIndex.setTitle("Remove last character");
 					opIndex.addClickHandler(new ClickHandler() {
-
 						@Override
 						public void onClick(ClickEvent event) {
 							event.preventDefault();
 							String str = "";
-							if (resultLabel.getText() != null && resultLabel.getText().length() > 0) {
-						        str = resultLabel.getText().substring(0, resultLabel.getText().length() - 1);
-						        resultLabel.setText(str);
+							if (resultTextBox.getText() != null && resultTextBox.getText().length() > 0) {
+						        str = resultTextBox.getText().substring(0, resultTextBox.getText().length() - 1);
+						        resultTextBox.setText(str);
 						        
-						        if(isEmpty(resultLabel.getText())) {
-									resultLabel.setText("0");
+						        if(isEmpty(resultTextBox.getText())) {
+									resultTextBox.setText("0");
 								}
 						    }
-						}
-						
+						}				
 					});
 				}
 			} else {
 				opIndex.setStyleName("calc__sign");
 				opIndex.addClickHandler(new ClickHandler() {
-
 					@Override
 					public void onClick(ClickEvent event) {
 						event.preventDefault();
-						if(resultLabel.getText() != "0") {
+						if(resultTextBox.getText() != "0") {
 							operatorInput(btnText);
-							checkIfDuplicate();
-							resultLabel.setText(resultLabel.getText() + btnText);
-							
+							if(checkIfOperator(resultTextBox.getText().substring(resultTextBox.getText().length() - 1))) {
+								resultTextBox.setText(resultTextBox.getText().substring(0, resultTextBox.getText().length() - 1) + btnText);
+							} else {
+								resultTextBox.setText(resultTextBox.getText() + btnText);
+							}
 						} else {
 							return;
 						}
 					}
-					
 				});
 			}
-			resultLabel.setFocus(true);
+			resultTextBox.setFocus(true);
 		}
-		
 	}
 	/* End of generateButton() */
 	
 	/* Addition */
-	public void add(String preValue, String postValue) {
-		newValue = Float.parseFloat(preValue) + Float.parseFloat(postValue);
+	public void add() {
+		newValue = preValue + postValue;
 		isZeroByCalc(newValue);
 	}
 
 	/* Subtraction */
-	public void sub(String preValue, String postValue) {
-		newValue = Float.parseFloat(preValue) - Float.parseFloat(postValue);
+	public void sub() {
+		newValue = preValue - postValue;
 		isZeroByCalc(newValue);
 	}
 	
 	/* Multiplication */
-	public void multiply(String preValue, String postValue) {
-		newValue = Float.parseFloat(preValue) * Float.parseFloat(postValue);
+	public void multiply() {
+		newValue = preValue * postValue;
 		isZeroByCalc(newValue);
 	}
 
 	/* Division */
-	public void divide(String preValue, String postValue) {
-		newValue = Float.parseFloat(preValue) / Float.parseFloat(postValue);
+	public void divide() {
+		newValue = preValue / postValue;
 		isZeroByCalc(newValue);
 	}
 	
 	/* Makes Calculations depending of the currentOperator active */
 	public void calculate() {
-		postValue = resultLabel.getText().substring(preValue.length() + 1);
-		if (currentOperator == "+") {
-			add(preValue, postValue);
-		} else if (currentOperator == "-") {
-			sub(preValue, postValue);
-		} else if (currentOperator == "*") {
-			multiply(preValue, postValue);
-		} else if (currentOperator == "/") {
-			divide(preValue, postValue);
-		}
+		splitFromString(resultTextBox.getText());
 		
-		if(!isEmpty(resultLabel.getText())) {
+		if (currentOperator == "+") {
+			add();
+		} else if (currentOperator == "-") {
+			sub();
+		} else if (currentOperator == "*") {
+			multiply();
+		} else if (currentOperator == "/") {
+			divide();
+		}
+				
+		if(!isEmpty(resultTextBox.getText())) {
 			toResultsTable();
 		}
-		resultLabel.setText("0");
 		
+		resultTextBox.setText("0");
+	}
+	
+	/* Splits a String into a array of Strings then parses the values to Float */
+	public void splitFromString(String s) {
+		String[] results = s.split("[" + currentOperator + "]");
+
+		preValue = Float.parseFloat(results[0]);
+		postValue = Float.parseFloat(results[1]);
 	}
 	
 	/* Checks wheter last character in a String is a Operator or Not. [Not used as for now] */
 	public boolean isOperator() {
 		String check = "";		
-	    check = resultLabel.getText().substring(0, resultLabel.getText().length() - 1);
+	    check = resultTextBox.getText().substring(0, resultTextBox.getText().length() - 1);
 		if(check == "+" || check == "-" || check == "*" || check == "/") {
 			return true;
 		} else {
@@ -289,22 +329,15 @@ public class ExempelProjekt implements EntryPoint {
 			currentOperator = "*";
 		} else if (btnText.equals("/")) {
 			currentOperator = "/";
-		} else if (btnText.equals("=")) {
-			if (postValue == "") {
-				Window.alert("Du måste ha en komplett uträkning! Exempel 1+1, 50-5 osv...");
-				return;
-			}		
-			calculate();
-		}
-		preValue = resultLabel.getText().substring(0, resultLabel.getText().length());
+		} 
 	}
 	
 	/* Uses a Row count in order to put the results at the appropriate level of the table */
 	public void toResultsTable() {
 		int row = newRow++;
-		if(!isEmpty(preValue) && !isEmpty(currentOperator)) {
+		if(!isEmpty(currentOperator)) {
 			resultsTable.setText(row, 0, preValue + " " + currentOperator + " " + postValue);
-			if(isZeroByCalc || !isEmpty(resultLabel.getText())) {
+			if(isZeroByCalc || !isEmpty(resultTextBox.getText())) {
 				resultsTable.setText(row, 1, Float.toString(newValue));
 			}
 		} else {
@@ -312,14 +345,12 @@ public class ExempelProjekt implements EntryPoint {
 		}
 	}
 	
-	public void checkIfDuplicate() {
-		String s = resultLabel.getText();
-		s = s.replace("+", "");
-		s = s.replace("-", "");
-		s = s.replace("*", "");
-		s = s.replace("/", "");
-		
-		resultLabel.setText(s);
+	/* Checks if a String contains an Operator and returns the result */
+	public boolean checkIfOperator(String string) {
+		if(string.equals("+") || string.equals("-") || string.equals("*") || string.equals("/")) {
+			return true;
+		}
+		return false;
 	}
 	
 	/* Checks if String is empty or not defined */
@@ -330,26 +361,15 @@ public class ExempelProjekt implements EntryPoint {
 		return false;
 	}
 	
-	/* Checks if value is 0 by Calculation or not [For allowing result to be 0 but not if not through calculation] */
+	/* Checks if value is 0 by Calculation or not [For allowing result to be 0 except if not through calculation] */
 	public boolean isZeroByCalc(Float value) {
 		if(value == 0) {
 			isZeroByCalc = true;
-		} else if(value == 0 && postValue.equals("0")) {
+		} else if(value == 0 && postValue == 0) {
 			isZeroByCalc = true;
 		} else {
 			isZeroByCalc = false;
 		}
 		return isZeroByCalc;
 	}
-	
-	/* Checks if a String could be seen as an integer */
-	public boolean isInteger(String input) {
-		try {
-			Integer.parseInt(input);
-			return true;
-		} catch (NumberFormatException e) {
-			return false;
-		}
-	}
-
 }
