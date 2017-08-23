@@ -1,0 +1,187 @@
+/** General stuff **/
+.container {
+	background-color: lightgrey;
+}
+
+h1 {
+    text-align: center;
+}
+
+/** The calculator **/
+.calc {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 190px;
+    height: 250px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 100px;
+    
+	box-shadow: 5px 2px 10px black;
+	border-color: black;
+	border-width: 2px;
+	border-radius: 15px;
+	border-style: solid;
+    
+	display: inline-block;
+	padding: 10px;
+    
+	background-color: dimgrey;
+}
+
+.calc__display {
+	background-color: whitesmoke;
+	width: 180px;
+	padding: 10px;
+	display: block;
+	margin-bottom: 5px;
+	overflow: auto;
+
+	border-style: solid;
+	border-width: 1px;
+	border-color: black;
+	border-radius: 5px;
+
+    /* Change mouse pointer on mouseover */
+	user-select: auto;
+	cursor: auto;
+}
+
+.calc__number {
+	display: inline-block;
+	background-color: #cccccc;
+	width: 43px;
+	padding: 10px;
+
+	border-style: solid;
+	border-width: 1px;
+	border-color: black;
+    
+    /* Change mouse pointer on mouseover */
+    user-select: none;
+	cursor: pointer;
+}
+#equals {
+    text-align: center;
+    background: lightgreen;
+    margin-left: 3px;
+    margin-right: 3px;
+	width: 184px;
+    padding: 10px;
+    
+    border-style: solid;
+	border-width: 1px;
+	border-color: black;
+    
+    /* Change mouse pointer on mouseover */
+    user-select: none;
+	cursor: pointer;
+}
+
+#clearResult {
+    text-align: center;
+    background: lightcoral;
+	width: 43px;
+    padding: 10px;
+    
+    border-style: solid;
+	border-width: 1px;
+	border-color: black;
+    
+    /* Change mouse pointer on mouseover */
+    user-select: none;
+	cursor: pointer;
+}
+
+#removeLast {
+    text-align: center;
+    background: lightblue;
+	width: 43px;
+    padding: 9px;
+    
+    border-style: solid;
+	border-width: 1px;
+	border-color: black;
+    
+    /* Change mouse pointer on mouseover */
+    user-select: none;
+	cursor: pointer;
+}
+
+#equals:hover {
+	background: seagreen;
+	color: whitesmoke;
+}
+
+#clearResult:hover {
+	background: red;
+	color: black;
+}
+
+#removeLast:hover {
+	background: blue;
+	color: whitesmoke;
+}
+
+.calc__sign {
+	display: inline-block;
+	background-color: orange;
+	width: 43px;
+	padding: 10px;
+    
+    border-style: solid;
+	border-width: 1px;
+	border-color: black;
+    
+    /* Change mouse pointer on mouseover */
+    user-select: none;
+	cursor: pointer;
+}
+
+.calc {
+    
+}
+
+.calc__sign:hover, .calc__number:hover {
+	background-color: lightyellow;
+}
+
+.calc__sign:active, .calc__number:active, #equals:active, #clearResult:active, #removeLast:active {
+	transform: translateY(3px);
+}
+
+/* Results Table */
+#resultsTable {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 760px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 400px;
+}
+
+/* Resultslist header row */
+.resultsListHeader {
+  background-color: #2062B8;
+  color: white;
+  font-style: italic;
+}
+
+/* Resultslist flex table */
+.resultsList {
+  border: 1px solid silver;
+  padding: 2px;
+  margin-bottom:6px;
+}
+
+/* resultslist Columns */
+.resultsListColumn {
+  text-align: center;
+  width: 380px;
+}
