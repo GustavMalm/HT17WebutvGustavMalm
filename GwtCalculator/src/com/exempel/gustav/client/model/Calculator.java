@@ -32,6 +32,11 @@ public class Calculator {
 	/* Division */
 	public void divide(Float preValue, Float postValue) {
 		sum = preValue / postValue;
+		
+		/* Checks if special occurance the user tried Division/0 which will result in infinity */
+		if(Float.isInfinite(sum) || Float.isNaN(sum)) {
+			sum = 0;
+		}
 		calcControl.isZeroByCalc(sum);
 	}
 
