@@ -44,7 +44,7 @@ public class CalculatorController implements EntryPoint {
 		postValue = Float.parseFloat(results[1]);
 	}
 	
-	/* Checks wheter last character in a String is a Operator or Not. [Not used as for now] */
+	/* Checks wheter last character of a String is a Operator or Not. */
 	public boolean isOperator() {
 		String check = "";		
 	    check = getResultTextBox().getText().substring(0, getResultTextBox().getText().length() - 1);
